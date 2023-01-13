@@ -8,8 +8,24 @@ def create_link_file(file):
 
 
 def generate_folder_table():
-    files = [file for file in os.listdir('.')]
-    files = list(filter(lambda file: not file.find("readme") != -1 and not file[0]== '.', files))
+    folders = [folder for folder in os.listdir('.') if os.path.isdir(folder)]
+    ffiles = [file for file in os.listdir('.') if not os.path.isdir(file)]
+    ffiles.sort()
+    folders.sort()
+    files = []
+    files.extend(folders)
+    files.extend(ffiles)
+
+    files = list(filter(lambda file: not file.find("readme") != -1 and
+                                     not file[0]== '.', files))
+
+    for file in files:
+        if file.find('.h'):
+            module_name = file.replace(".h", "")
+            if module_name + ".cpp" in files:
+                files.remove(module_name + ".cpp")
+            if module_name + ".c" in files:
+                files.remove(module_name + ".c")
 
     length = max([len(create_link_file(number)) for number in files])
     descriptions = []
@@ -19,16 +35,22 @@ def generate_folder_table():
             description = "External dependencies"
         if file == "CMakeLists.txt":
             description = "Compilation instructions"
+        if file == "doc":
+            description = "Documentation"
+        if file == "src":
+            description = "Source folder"
         descriptions.append(description)
 
     length_d = max([len(number) for number in descriptions])
+    if length_d < 13:
+        length_d = 13
     # print(files)
     table =  "| " + "Item".center(length) +" | " + "Description".center(length_d) +  " |\n"
     table += "|-" + "".center(length, "-") +"-|-"+"".center(length_d, "-")+"-|\n"
     for index in range(len(files)):
         file = files[index]
         description = descriptions[index]
-        table += "| " + create_link_file(file).ljust(length) + " | " + description.center(length_d) +" |\n"
+        table += "| " + create_link_file(file).ljust(length) + " | " + description.ljust(length_d) +" |\n"
     return table
 
 
@@ -57,6 +79,10 @@ def save_safe(text):
 def common_titles(name):
     if name.lower() == "src":
         return "Source Folder"
+    if name.lower() == "doc":
+        return "Documentation"
+    if name.lower() == "external":
+        return "External Dependencies"
     return name
 
 def main():
