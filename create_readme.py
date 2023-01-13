@@ -2,15 +2,33 @@
 import os
 
 
+def create_link_file(file):
+    return f"[{file}](./{file})"
+
+
+
 def generate_folder_table():
-    files = [f"[{file}](./{file})" for file in os.listdir('.')]
-    files = list(filter(lambda file: not file.find("readme") != -1, files))
-    length = max([len(number) for number in files])
-    # print(files)
-    table =  "| " + "Item".center(length) +" |  Description  |\n"
-    table += "|-" + "".center(length, "-") +"-|---------------|\n"
+    files = [file for file in os.listdir('.')]
+    files = list(filter(lambda file: not file.find("readme") != -1 and not file[0]== '.', files))
+
+    length = max([len(create_link_file(number)) for number in files])
+    descriptions = []
     for file in files:
-        table += "| " + file.ljust(length) + " |               |\n"
+        description = ""
+        if file == "external":
+            description = "External dependencies"
+        if file == "CMakeLists.txt":
+            description = "Compilation instructions"
+        descriptions.append(description)
+
+    length_d = max([len(number) for number in descriptions])
+    # print(files)
+    table =  "| " + "Item".center(length) +" | " + "Description".center(length_d) +  " |\n"
+    table += "|-" + "".center(length, "-") +"-|-"+"".center(length_d, "-")+"-|\n"
+    for index in range(len(files)):
+        file = files[index]
+        description = descriptions[index]
+        table += "| " + create_link_file(file).ljust(length) + " | " + description.center(length_d) +" |\n"
     return table
 
 
@@ -36,9 +54,14 @@ def save_safe(text):
         print("Created readme.md file")
 
 
+def common_titles(name):
+    if name.lower() == "src":
+        return "Source Folder"
+    return name
+
 def main():
     print("Creating readme file...")
-    text = "# " + snake_case_to_title(os.getcwd().split("/")[-1])
+    text = "# " + common_titles(snake_case_to_title(os.getcwd().split("/")[-1]))
     text += "\n\n"
     text += "Add introduction here"
     text += "\n\n"
