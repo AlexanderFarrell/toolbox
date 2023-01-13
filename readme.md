@@ -18,6 +18,5 @@ Readme generation for example helps to create readme files in projects for easie
 | [create_c_class.py](./create_c_class.py)       |               |
 | [init_py_project.py](./init_py_project.py)     |               |
 | [c_class.py](./c_class.py)                     |               |
-| [.idea](./.idea)                               |               |
 
 
